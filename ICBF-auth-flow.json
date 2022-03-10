@@ -1,0 +1,213 @@
+[
+    {
+        "id": "59ff2a1.fa600d4",
+        "type": "http in",
+        "z": "28128406cda5e707",
+        "name": "ICBF Call Back URI",
+        "url": "/icbf/auth/callback",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 150,
+        "y": 140,
+        "wires": [
+            [
+                "24601d6861d73b4e",
+                "54c1e70d.ab3e18"
+            ]
+        ]
+    },
+    {
+        "id": "54c1e70d.ab3e18",
+        "type": "template",
+        "z": "28128406cda5e707",
+        "name": "page",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<html>\n    <head></head>\n    <body>\n        <h1>Login complete return to application</h1>\n    </body>\n</html>",
+        "x": 330,
+        "y": 200,
+        "wires": [
+            [
+                "266c286f.d993d8"
+            ]
+        ]
+    },
+    {
+        "id": "266c286f.d993d8",
+        "type": "http response",
+        "z": "28128406cda5e707",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 470,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "fdd42383f3e529a5",
+        "type": "function",
+        "z": "28128406cda5e707",
+        "name": "Save OAuth Tokens",
+        "func": "if (msg.payload.access_token) {\n    var ICBFtoken = msg.payload.access_token;\n    var ICBFrefresh = msg.payload.refresh_token;\n    global.set('ICBFtoken', ICBFtoken);\n    flow.set('ICBFrefresh', ICBFrefresh);\n    Time = new Date()\n    msg.payload = \"Access Granted \" + Time;\n    \n} else {\n    msg.payload = \"Authorization error.\";\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 910,
+        "y": 140,
+        "wires": [
+            [
+                "9faa6a8e88c6a920"
+            ]
+        ]
+    },
+    {
+        "id": "b5d2caf738cccf03",
+        "type": "function",
+        "z": "28128406cda5e707",
+        "name": "Refresh Token",
+        "func": "var ICBFrefresh = flow.get('ICBFrefresh');\n\nmsg.payload ={\n            \"grant_type\": \"refresh_token\",\n            \"client_id\": msg.client,\n            \"client_secret\": msg.secret,\n            \"refresh_token\": ICBFrefresh\n        }\n\nmsg.headers = {};\nmsg.headers['Accept'] = \"application/json\";\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['Cache-Control'] = 'no-cache';\n\nmsg.method = \"POST\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 60,
+        "wires": [
+            [
+                "9a87b218468119ca"
+            ]
+        ]
+    },
+    {
+        "id": "9a87b218468119ca",
+        "type": "http request",
+        "z": "28128406cda5e707",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://api.dev-icbf.com/oauth",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 710,
+        "y": 140,
+        "wires": [
+            [
+                "fdd42383f3e529a5"
+            ]
+        ]
+    },
+    {
+        "id": "0775cce45e0f89be",
+        "type": "function",
+        "z": "28128406cda5e707",
+        "name": "ICBF Oauth2",
+        "func": "msg.payload ={\n            \"grant_type\": \"authorization_code\",\n            \"client_id\": msg.client,\n            \"client_secret\": msg.secret,\n            \"code\": msg.payload.code,\n            \"redirect_uri\": msg.redirect\n        }\n\nmsg.headers = {};\nmsg.headers['Accept'] = \"application/json\";\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['Cache-Control'] = 'no-cache';\n\nmsg.method = \"POST\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 530,
+        "y": 140,
+        "wires": [
+            [
+                "9a87b218468119ca"
+            ]
+        ]
+    },
+    {
+        "id": "9faa6a8e88c6a920",
+        "type": "debug",
+        "z": "28128406cda5e707",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1110,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "bba8ac5e31eef393",
+        "type": "inject",
+        "z": "28128406cda5e707",
+        "name": "",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 130,
+        "y": 60,
+        "wires": [
+            [
+                "4779e3fadc6a530c"
+            ]
+        ]
+    },
+    {
+        "id": "24601d6861d73b4e",
+        "type": "credentials",
+        "z": "28128406cda5e707",
+        "name": "",
+        "props": [
+            {
+                "value": "client",
+                "type": "msg"
+            },
+            {
+                "value": "secret",
+                "type": "msg"
+            },
+            {
+                "value": "redirect",
+                "type": "msg"
+            }
+        ],
+        "x": 350,
+        "y": 140,
+        "wires": [
+            [
+                "0775cce45e0f89be"
+            ]
+        ]
+    },
+    {
+        "id": "4779e3fadc6a530c",
+        "type": "credentials",
+        "z": "28128406cda5e707",
+        "name": "",
+        "props": [
+            {
+                "value": "client",
+                "type": "msg"
+            },
+            {
+                "value": "secret",
+                "type": "msg"
+            }
+        ],
+        "x": 290,
+        "y": 60,
+        "wires": [
+            [
+                "b5d2caf738cccf03"
+            ]
+        ]
+    }
+]
