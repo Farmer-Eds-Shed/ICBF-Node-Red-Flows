@@ -1,0 +1,98 @@
+[
+    {
+        "id": "478ccd37a2fdb63c",
+        "type": "function",
+        "z": "28128406cda5e707",
+        "name": "Prepare HTTP request",
+        "func": "var ICBFtoken = global.get('ICBFtoken');\nmsg.headers = {};\nmsg.headers['Authorization'] = \"Bearer \"+ICBFtoken;\nmsg.headers['Accept'] = \"application/json\";\nmsg.headers['Cache-Control'] = 'no-cache';\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 380,
+        "wires": [
+            [
+                "41be1a80442e7c1b"
+            ]
+        ]
+    },
+    {
+        "id": "41be1a80442e7c1b",
+        "type": "function",
+        "z": "28128406cda5e707",
+        "name": "GET Herd Details",
+        "func": "msg.url = \"https://api.dev-icbf.com/v2/herd-details/animal-details\";\nmsg.method = \"GET\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 530,
+        "y": 380,
+        "wires": [
+            [
+                "472a4c1b347c8de6"
+            ]
+        ]
+    },
+    {
+        "id": "472a4c1b347c8de6",
+        "type": "http request",
+        "z": "28128406cda5e707",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 730,
+        "y": 380,
+        "wires": [
+            [
+                "d206bbf08f504e06"
+            ]
+        ]
+    },
+    {
+        "id": "a3f98aa25e6ec8bb",
+        "type": "inject",
+        "z": "28128406cda5e707",
+        "name": "",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 110,
+        "y": 380,
+        "wires": [
+            [
+                "478ccd37a2fdb63c"
+            ]
+        ]
+    },
+    {
+        "id": "d206bbf08f504e06",
+        "type": "debug",
+        "z": "28128406cda5e707",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 910,
+        "y": 380,
+        "wires": []
+    }
+]
